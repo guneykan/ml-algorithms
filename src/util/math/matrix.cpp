@@ -17,11 +17,15 @@ Matrix::Matrix(const std::vector<double> &data, int r, int c) {
   _c = c;
 }
 
-double Matrix::get(int i, int j) const { return _data[i * _c + j];   }
+double Matrix::get(int i, int j) const { return _data[i * _c + j]; }
 
 void Matrix::set(int i, int j, double val) { _data[i * _c + j] = val; }
 
 Matrix Matrix::plus(const Matrix &m) const {
+  if (_r != m._r || _c != m._c) {
+    std::cerr << "Can't sum the matrices!" << std::endl;
+    throw "Dimension error";
+  }
   std::vector<double> copy = _data;
   std::transform(copy.begin(), copy.end(), m._data.begin(), copy.begin(),
                  std::plus<double>());
@@ -30,6 +34,10 @@ Matrix Matrix::plus(const Matrix &m) const {
 }
 
 Matrix Matrix::minus(const Matrix &m) const {
+  if (_r != m._r || _c != m._c) {
+    std::cerr << "Can't subtract the matrices!" << std::endl;
+    throw "Dimension error";
+  }
   std::vector<double> copy = _data;
   std::transform(copy.begin(), copy.end(), m._data.begin(), copy.begin(),
                  std::minus<double>());
@@ -37,7 +45,11 @@ Matrix Matrix::minus(const Matrix &m) const {
   return Matrix(copy, _r, _c);
 }
 
-Matrix Matrix::times(const Matrix &m) const{
+Matrix Matrix::times(const Matrix &m) const {
+  if (_c != m._r) {
+    std::cerr << "Can't multiply the matrices!" << std::endl;
+    throw "Dimension error";
+  }
   Matrix res(_r, m._c);
   for (int i = 0; i < _r; i++) {
     for (int j = 0; j < m._c; j++) {
