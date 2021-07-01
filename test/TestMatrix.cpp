@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "../util/math/matrix.h"
+#include "util/math/matrix.h"
 
 TEST(Matrix, sum_1by1) {
   Matrix m1(std::vector<double>{0.5}, 1, 1);

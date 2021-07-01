@@ -18,12 +18,18 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 set(SRC_FILE_DIR ${PROJECT_SOURCE_DIR}/src)
+set(TEST_FILE_DIR ${PROJECT_SOURCE_DIR}/test)
 
 file(GLOB_RECURSE SRC_FILES ${SRC_FILE_DIR}/*.c  ${SRC_FILE_DIR}/*.cpp)
+file(GLOB_RECURSE TEST_FILES ${TEST_FILE_DIR}/*.c  ${TEST_FILE_DIR}/*.cpp)
 
-add_executable(Test ${SRC_FILES})
+
+add_executable(tests ${SRC_FILES} ${TEST_FILES})
+
+target_include_directories(tests PRIVATE ${SRC_FILE_DIR})
 
 target_link_libraries(
-  Test
+  tests
   gtest_main
 )
+
