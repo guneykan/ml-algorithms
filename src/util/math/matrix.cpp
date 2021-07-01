@@ -2,6 +2,8 @@
 
 #include <cmath>
 #include <iostream>
+#include <functional>
+#include <algorithm>
 
 Matrix::Matrix(int r, int c, double val) : _r(r), _c(c) {
   _data = std::vector<double>(r * c, val);
