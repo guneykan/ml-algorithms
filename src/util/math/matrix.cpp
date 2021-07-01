@@ -1,4 +1,6 @@
 #include "matrix.h"
+
+#include <cmath>
 #include <iostream>
 
 Matrix::Matrix(int r, int c, double val) : _r(r), _c(c) {
@@ -13,6 +15,7 @@ Matrix::Matrix(const std::vector<double> &data, int r, int c) {
   }
 
   _data = data;
+  _data.reserve(r * c);
   _r = r;
   _c = c;
 }
@@ -24,7 +27,7 @@ void Matrix::set(int i, int j, double val) { _data[i * _c + j] = val; }
 Matrix Matrix::plus(const Matrix &m) const {
   if (_r != m._r || _c != m._c) {
     std::cerr << "Can't sum the matrices!" << std::endl;
-    throw "Dimension error";
+    throw DimensionException();
   }
   std::vector<double> copy = _data;
   std::transform(copy.begin(), copy.end(), m._data.begin(), copy.begin(),
@@ -79,6 +82,83 @@ Matrix Matrix::reshape(int r, int c) {
   }
   std::vector<double> copy = _data;
   return Matrix(copy, r, c);
+}
+
+Matrix Matrix::transpose() {
+  Matrix res(_c, _r);
+  for (int i = 0; i < _c; i++) {
+    for (int j = 0; j < _r; j++) {
+      res.set(i, j, get(j, i));
+    }
+  }
+  return res;
+}
+
+double Matrix::minor(int i, int j) {
+  std::vector<double> data;
+  for (int k = 0; k < _r; k++) {
+    for (int l = 0; l < _c; l++) {
+      if (k == i || l == j) {
+        continue;
+      }
+      data.push_back(get(k, l));
+    }
+  }
+  return Matrix(data, _r - 1, _c - 1).det();
+}
+
+double Matrix::cofactor(int i, int j) {
+  std::vector<double> data;
+  for (int k = 0; k < _r; k++) {
+    for (int l = 0; l < _c; l++) {
+      if (k == i || l == j) {
+        continue;
+      }
+      data.push_back(get(k, l));
+    }
+  }
+  return std::pow(-1, i + j) * Matrix(data, _r - 1, _c - 1).det();
+}
+
+Matrix Matrix::cofactor() {
+  std::vector<double> data;
+  for (int k = 0; k < _r; k++) {
+    for (int l = 0; l < _c; l++) {
+      data.push_back(cofactor(k, l));
+    }
+  }
+  return Matrix(data, _r, _c);
+}
+
+Matrix Matrix::adjoint() { return cofactor().transpose(); }
+
+double Matrix::det() {
+  if (_r != _c) {
+    std::cerr << "Can't compute the determinant!" << std::endl;
+    throw "Dimension error";
+  }
+
+  if (_r == 1) {
+    return get(0, 0);
+  }
+
+  double d = 0;
+  for (int j = 0; j < _c; j++) {
+    d += get(0, j) * cofactor(0, j);
+  }
+
+  return d;
+}
+
+Matrix Matrix::inverse() {
+  std::vector<double> data;
+  double d = det();
+  if (d == 0) {
+    std::cerr << "Can't compute the inverse!" << std::endl;
+    throw "Singular matrix";
+  }
+
+  return adjoint().times(1.0 / d);
 }
 
 std::string Matrix::to_string() const {
