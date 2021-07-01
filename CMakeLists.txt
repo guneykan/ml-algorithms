@@ -33,3 +33,4 @@ target_link_libraries(
   gtest_main
 )
 
+add_test(NAME auto_test COMMAND tests)
